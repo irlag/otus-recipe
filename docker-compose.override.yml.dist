@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+
+  app:
+    ports:
+      - "8000:${PORT}"
+
+  db:
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -1,0 +1,80 @@
+version: "3.9"
+
+services:
+
+  app:
+    image: otus-recipe-app
+    container_name: otus-recipe-app
+    build:
+      context: .
+      target: app
+      args:
+        - GOLANG_VERSION
+    ports:
+      - "8000:${PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - "./:/app"
+    working_dir: "/app"
+    command: ["application"]
+    restart: unless-stopped
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${PORT}/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    profiles:
+      - app
+    networks:
+      otus-recipe:
+        aliases:
+          - app
+
+  db:
+    container_name: otus-recipe-db
+    image: postgres:15.2
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      TZ: UTC
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -q -d ${DB_DATABASE} -U ${DB_USER} -h localhost || exit 1
+      interval: 5s
+      start_period: 1m
+    profiles:
+      - app
+      - dependencies
+    networks:
+      otus-recipe:
+        aliases:
+          - db
+
+  migrate:
+    container_name: otus-recipe-migrate
+    image: "migrate/migrate:v4.13.0"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    volumes:
+      - "./migrations:/migrations"
+    profiles:
+      - app
+      - dependencies
+    command: [ "-path", "/migrations/", "-database", "postgres://otus-microservice-architecture:otus-microservice-architecture@db:5432/otus-microservice-architecture?sslmode=disable", "up" ]
+    networks:
+      otus-recipe:
+        aliases:
+          - migrate
+
+networks:
+  otus-recipe:
