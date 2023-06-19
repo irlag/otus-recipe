@@ -1,0 +1,2 @@
+DROP TABLE recipe;
+DROP EXTENSION IF EXISTS pgcrypto;
