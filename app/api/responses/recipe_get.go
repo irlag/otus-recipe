@@ -4,8 +4,9 @@ package responses
 
 import (
 	"net/http"
+	"strconv"
 
-	db "otus-recipe/app/storage/db/sqlc"
+	"otus-recipe/app/storage/elastic/elastic_index"
 )
 
 type RecipeCommonOkResponse struct {
@@ -25,18 +26,20 @@ type RecipeGetOkResponse struct {
 	RecipeCommonOkResponse
 }
 
-func NewRecipeGetOkResponse(recipe db.Recipe) RecipeGetOkResponse {
+func NewRecipeGetOkResponse(recipe *elastic_index.Recipe) RecipeGetOkResponse {
+	recipeId, _ := strconv.Atoi(recipe.ID)
+
 	return RecipeGetOkResponse{
 		RecipeCommonOkResponse: RecipeCommonOkResponse{
-			ID:            recipe.ID,
+			ID:            int64(recipeId),
 			Name:          recipe.Name,
-			Description:   recipe.Description.String,
+			Description:   recipe.Description,
 			CookingTime:   int(recipe.CookingTime),
-			Calories:      getIntValueFromSqlNull(recipe.Calories),
-			Proteins:      getIntValueFromSqlNull(recipe.Proteins),
-			Fats:          getIntValueFromSqlNull(recipe.Fats),
-			Carbohydrates: getIntValueFromSqlNull(recipe.Carbohydrates),
-			Version:       recipe.Version.String(),
+			Calories:      recipe.Calories,
+			Proteins:      recipe.Proteins,
+			Fats:          recipe.Fats,
+			Carbohydrates: recipe.Carbohydrates,
+			Version:       recipe.Version,
 		},
 	}
 }

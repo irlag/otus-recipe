@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"otus-recipe/app/models"
-	db "otus-recipe/app/storage/db/sqlc"
+	"otus-recipe/app/storage/elastic/elastic_index"
 )
 
 //easyjson:json
@@ -15,7 +15,7 @@ type RecipeListOkResponse struct {
 	Items []RecipeGetOkResponse `json:"items"`
 }
 
-func NewRecipeListOkResponse(recipes []db.Recipe, paginated models.Paginated) RecipeListOkResponse {
+func NewRecipeListOkResponse(recipes []*elastic_index.Recipe, paginated models.Paginated) RecipeListOkResponse {
 	response := RecipeListOkResponse{
 		Paginated: Paginated{
 			Page:  paginated.GetPage(),

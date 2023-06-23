@@ -3,28 +3,22 @@ package recipe
 import (
 	"net/http"
 
+	"otus-recipe/app/api/parameters"
 	"otus-recipe/app/api/responses"
 	"otus-recipe/app/models"
 )
 
 func (r *Recipe) List() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		paginated := models.NewPaginatedFromRequest(request)
+		recipeListParams := parameters.NewRecipeListParamsFromRequest(request)
+		paginated := models.NewPaginatedFromRequest(recipeListParams)
 
-		recipes, err := r.processors.RecipeProcessor.List(request.Context(), paginated.GetLimit(), paginated.GetOffset())
+		recipes, err := r.processors.RecipeProcessor.List(request.Context(), paginated, recipeListParams)
 		if err != nil {
 			responses.NewErrorResponse(http.StatusInternalServerError, err).WriteErrorResponse(writer)
 
 			return
 		}
-		total, err := r.processors.RecipeProcessor.ListCount(request.Context())
-		if err != nil {
-			responses.NewErrorResponse(http.StatusInternalServerError, err).WriteErrorResponse(writer)
-
-			return
-		}
-
-		paginated.SetTotal(total)
 
 		recipeListResponse := responses.NewRecipeListOkResponse(recipes, paginated)
 		recipeListResponse.WriteResponse(writer)

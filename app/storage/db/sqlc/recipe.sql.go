@@ -131,6 +131,46 @@ func (q *Queries) GetRecipeForUpdate(ctx context.Context, id int64) (Recipe, err
 	return i, err
 }
 
+const ListAllRecipes = `-- name: ListAllRecipes :many
+SELECT id, name, description, cooking_time, calories, proteins, fats, carbohydrates, rating, vote_count, vote_sum, version FROM recipe
+`
+
+func (q *Queries) ListAllRecipes(ctx context.Context) ([]Recipe, error) {
+	rows, err := q.db.QueryContext(ctx, ListAllRecipes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Recipe{}
+	for rows.Next() {
+		var i Recipe
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.CookingTime,
+			&i.Calories,
+			&i.Proteins,
+			&i.Fats,
+			&i.Carbohydrates,
+			&i.Rating,
+			&i.VoteCount,
+			&i.VoteSum,
+			&i.Version,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const ListRecipe = `-- name: ListRecipe :many
 SELECT id, name, description, cooking_time, calories, proteins, fats, carbohydrates, rating, vote_count, vote_sum, version FROM recipe
 ORDER BY id DESC

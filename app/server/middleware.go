@@ -3,15 +3,12 @@ package server
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/prometheus/client_golang/prometheus"
 
 	"otus-recipe/app/services"
 
-	"otus-recipe/app/api"
 	"otus-recipe/app/models"
 )
 
@@ -37,22 +34,22 @@ func (m *Middlewares) ResponseMiddleware() mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			respWriter := NewResponseWriter(w)
 
-			defer func() {
-				if api.AppRoutes["metrics"].Path == r.RequestURI {
-					return
-				}
-
-				startedAt := r.Context().Value(models.RequestStartedAtKey).(time.Time)
-				method := mux.CurrentRoute(r).GetName()
-
-				m.HttpMetrics.statReqDurations.With(
-					prometheus.Labels{"method": method},
-				).Observe(time.Since(startedAt).Seconds())
-
-				m.HttpMetrics.statReqCount.With(
-					prometheus.Labels{"method": method, "code": strconv.Itoa(respWriter.statusCode)},
-				).Inc()
-			}()
+			//defer func() {
+			//	if api.AppRoutes["metrics"].Path == r.RequestURI {
+			//		return
+			//	}
+			//
+			//	startedAt := r.Context().Value(models.RequestStartedAtKey).(time.Time)
+			//	method := mux.CurrentRoute(r).GetName()
+			//
+			//	m.HttpMetrics.statReqDurations.With(
+			//		prometheus.Labels{"method": method},
+			//	).Observe(time.Since(startedAt).Seconds())
+			//
+			//	m.HttpMetrics.statReqCount.With(
+			//		prometheus.Labels{"method": method, "code": strconv.Itoa(respWriter.statusCode)},
+			//	).Inc()
+			//}()
 
 			next.ServeHTTP(respWriter, r)
 		})

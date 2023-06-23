@@ -3,16 +3,13 @@ package recipe
 import (
 	"context"
 
-	db "otus-recipe/app/storage/db/sqlc"
+	"otus-recipe/app/api/parameters"
+	"otus-recipe/app/models"
+	"otus-recipe/app/storage/elastic/elastic_index"
 )
 
-func (r *recipeProcessor) List(ctx context.Context, limit int64, offset int64) (recipes []db.Recipe, err error) {
-	listDbRecipeParams := db.ListRecipeParams{
-		Limit:  int32(limit),
-		Offset: int32(offset),
-	}
-
-	recipes, err = r.store.ListRecipe(ctx, listDbRecipeParams)
+func (r *recipeProcessor) List(ctx context.Context, paginated models.Paginated, params *parameters.RecipeListParams) (recipes []*elastic_index.Recipe, err error) {
+	recipes, err = r.elasticsearch.SearchRecipes(ctx, params, paginated)
 	if err != nil {
 		return recipes, err
 	}

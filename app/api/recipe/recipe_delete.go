@@ -18,7 +18,7 @@ func (r *Recipe) Delete() http.HandlerFunc {
 			return
 		}
 
-		_, err = r.processors.RecipeProcessor.Get(request.Context(), recipeDeleteParams.RecipeID)
+		_, err = r.processors.RecipeProcessor.GetFromDb(request.Context(), recipeDeleteParams.RecipeID)
 		if err != nil {
 			response := &responses.ErrorResponse{}
 			switch err {

@@ -2,8 +2,8 @@ package models
 
 import (
 	"math"
-	"net/http"
-	"strconv"
+
+	"otus-recipe/app/api/parameters"
 )
 
 const DefaultLimit int64 = 10
@@ -39,11 +39,9 @@ func NewPaginated(limit int64, page int64) Paginated {
 	}
 }
 
-func NewPaginatedFromRequest(request *http.Request) Paginated {
-	queryParams := request.URL.Query()
-
-	limit, _ := strconv.Atoi(queryParams.Get("limit"))
-	page, _ := strconv.Atoi(queryParams.Get("page"))
+func NewPaginatedFromRequest(recipeListParams *parameters.RecipeListParams) Paginated {
+	limit := recipeListParams.Limit
+	page := recipeListParams.Page
 
 	return NewPaginated(int64(limit), int64(page))
 }

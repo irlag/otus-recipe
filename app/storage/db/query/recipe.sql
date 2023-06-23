@@ -45,3 +45,6 @@ WHERE id = $1 RETURNING *;
 -- name: DeleteRecipe :execrows
 DELETE FROM recipe
 WHERE id = $1;
+
+-- name: ListAllRecipes :many
+SELECT * FROM recipe;

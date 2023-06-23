@@ -11,16 +11,12 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 
-	"otus-recipe/app/services"
-
-	"otus-recipe/app/metrics"
-
 	"otus-recipe/app/api"
 	recipeApi "otus-recipe/app/api/recipe"
-	appProcessors "otus-recipe/app/processors"
-	db "otus-recipe/app/storage/db/sqlc"
-
 	"otus-recipe/app/config"
+	"otus-recipe/app/metrics"
+	appProcessors "otus-recipe/app/processors"
+	"otus-recipe/app/services"
 )
 
 type Server struct {
@@ -32,15 +28,14 @@ type Server struct {
 	HttpMetrics *HttpMetrics
 }
 
-func New(config *config.Config) *Server {
-	logger, err := NewLogger(config.Debug)
-	if err != nil {
-		logger.Fatal("can't initialize zap logger", zap.Error(err))
-	}
-
+func New(
+	config *config.Config,
+	log *zap.Logger,
+	processors *appProcessors.Processors,
+) *Server {
 	server := &Server{
 		config: config,
-		Logger: logger,
+		Logger: log,
 	}
 
 	server.configurePrometheus()
@@ -49,16 +44,9 @@ func New(config *config.Config) *Server {
 	appMetrics := metrics.New()
 	appMetrics.MustRegisterMetrics(server.Prometheus)
 
-	store := db.NewStore()
-	err = store.Open(config.DB)
-	if err != nil {
-		logger.Fatal("can't initialize db store", zap.Error(err))
-	}
-
 	server.Router = NewRouter()
 
-	server.Services = services.New(logger, config)
-	processors := appProcessors.NewProcessor(store, server.Services, logger, config)
+	server.Services = services.New(log, config)
 
 	api.NewMetricsApi(server.Prometheus).HandleMethods(server.Router)
 	api.NewHealthcheckApi(processors).HandleMethods(server.Router)

@@ -3,14 +3,18 @@ package recipe
 import (
 	"context"
 
+	"otus-recipe/app/models"
 	db "otus-recipe/app/storage/db/sqlc"
+	"otus-recipe/app/storage/elastic"
+	"otus-recipe/app/storage/elastic/elastic_index"
 
 	"otus-recipe/app/api/parameters"
 )
 
 type Recipe interface {
-	Get(ctx context.Context, id int64) (recipe db.Recipe, err error)
-	List(ctx context.Context, limit int64, offset int64) (recipes []db.Recipe, err error)
+	Get(ctx context.Context, id int64) (recipe *elastic_index.Recipe, err error)
+	GetFromDb(ctx context.Context, id int64) (recipe db.Recipe, err error)
+	List(ctx context.Context, paginated models.Paginated, params *parameters.RecipeListParams) (recipes []*elastic_index.Recipe, err error)
 	ListCount(ctx context.Context) (int64, error)
 	Create(ctx context.Context, params *parameters.RecipeCreateParams) (db.Recipe, error)
 	Update(ctx context.Context, params *parameters.RecipeUpdateParams) (db.Recipe, error)
@@ -18,11 +22,13 @@ type Recipe interface {
 }
 
 type recipeProcessor struct {
-	store db.Store
+	store         db.Store
+	elasticsearch elastic.Elastic
 }
 
-func NewRecipeProcessor(store db.Store) Recipe {
+func NewRecipeProcessor(store db.Store, elasticsearch elastic.Elastic) Recipe {
 	return &recipeProcessor{
-		store: store,
+		store:         store,
+		elasticsearch: elasticsearch,
 	}
 }

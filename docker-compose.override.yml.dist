@@ -10,5 +10,23 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  kibana:
+      image: kibana:${ELASTIC_VERSION}
+      container_name: otus-recipe-kibana
+      depends_on:
+        elastic:
+          condition: service_healthy
+      profiles:
+        - app
+        - dependencies
+      ports:
+        - "5601:5601"
+      environment:
+        - ELASTICSEARCH_HOSTS=${ELASTIC_URLS}
+
+    elastic:
+      ports:
+        - "9200:9200"
+
 volumes:
   pgdata:

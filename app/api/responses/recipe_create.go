@@ -3,9 +3,9 @@ package responses
 //go:generate easyjson
 
 import (
-	"database/sql"
 	"net/http"
 
+	"otus-recipe/app/builders"
 	db "otus-recipe/app/storage/db/sqlc"
 )
 
@@ -20,21 +20,13 @@ func NewRecipeCreateOkResponse(recipe db.Recipe) RecipeCreateOkResponse {
 			ID:            recipe.ID,
 			Description:   recipe.Description.String,
 			CookingTime:   int(recipe.CookingTime),
-			Calories:      getIntValueFromSqlNull(recipe.Calories),
-			Proteins:      getIntValueFromSqlNull(recipe.Proteins),
-			Fats:          getIntValueFromSqlNull(recipe.Fats),
-			Carbohydrates: getIntValueFromSqlNull(recipe.Carbohydrates),
+			Calories:      builders.GetIntValueFromSqlNull(recipe.Calories),
+			Proteins:      builders.GetIntValueFromSqlNull(recipe.Proteins),
+			Fats:          builders.GetIntValueFromSqlNull(recipe.Fats),
+			Carbohydrates: builders.GetIntValueFromSqlNull(recipe.Carbohydrates),
 			Version:       recipe.Version.String(),
 		},
 	}
-}
-
-func getIntValueFromSqlNull(prop sql.NullInt32) *int32 {
-	if prop.Valid {
-		return &prop.Int32
-	}
-
-	return nil
 }
 
 func (r *RecipeCreateOkResponse) WriteResponse(rw http.ResponseWriter) {

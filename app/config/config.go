@@ -11,6 +11,7 @@ type Config struct {
 	BindAddress string `envconfig:"optional"`
 	Port        string `envconfig:"PORT"`
 	DB          *DBConfig
+	Elastic     ElasticSettings
 	Migrate     Migrate `envconfig:"MIGRATE"`
 	Debug       bool    `envconfig:"DEBUG"`
 }

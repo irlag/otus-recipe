@@ -18,7 +18,7 @@ func (r *Recipe) Update() http.HandlerFunc {
 			return
 		}
 
-		_, err = r.processors.RecipeProcessor.Get(request.Context(), recipeUpdateParams.RecipeID)
+		_, err = r.processors.RecipeProcessor.GetFromDb(request.Context(), recipeUpdateParams.RecipeID)
 		if err != nil {
 			response := &responses.ErrorResponse{}
 			switch err {
