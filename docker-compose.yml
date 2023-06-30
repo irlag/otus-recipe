@@ -70,11 +70,25 @@ services:
     profiles:
       - app
       - dependencies
-    command: [ "-path", "/migrations/", "-database", "postgres://otus-microservice-architecture:otus-microservice-architecture@db:5432/otus-microservice-architecture?sslmode=disable", "up" ]
+    command: [ "-path", "/migrations/", "-database", "postgres://otus-recipe:otus-recipe@db:5432/otus-recipe?sslmode=disable", "up" ]
     networks:
       otus-recipe:
         aliases:
           - migrate
+
+  elastic:
+    image: elasticsearch:${ELASTIC_VERSION}
+    container_name: otus-recipe-elastic
+    profiles:
+      - app
+      - dependencies
+    environment:
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+      ingest.geoip.downloader.enabled: "false"
+      ES_JAVA_OPTS: -Xms256m -Xmx256m
+    healthcheck:
+      test: "curl -s http://localhost:9200 > /dev/null || exit 1"
 
 networks:
   otus-recipe:

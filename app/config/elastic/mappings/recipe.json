@@ -1,0 +1,33 @@
+{
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "fields": {
+          "normalize": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer"
+          }
+        }
+      },
+      "description": {
+        "type": "text"
+      },
+      "calories": {
+        "type": "integer"
+      },
+      "proteins": {
+        "type": "integer"
+      },
+      "fats": {
+        "type": "integer"
+      },
+      "carbohydrates": {
+        "type": "integer"
+      },
+      "version": {
+        "type": "keyword"
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 package recipe
 
 import (
-	"database/sql"
 	"net/http"
 
 	"otus-recipe/app/api/parameters"
@@ -21,12 +20,14 @@ func (r *Recipe) Get() http.HandlerFunc {
 		recipe, err := r.processors.RecipeProcessor.Get(request.Context(), recipeGetParams.RecipeID)
 		if err != nil {
 			response := &responses.ErrorResponse{}
-			switch err {
-			case sql.ErrNoRows:
-				response = responses.NewErrorResponse(http.StatusNotFound, appErrors.RecipeNotFoundError)
-			default:
-				response = responses.NewErrorResponse(http.StatusInternalServerError, err)
-			}
+			response = responses.NewErrorResponse(http.StatusInternalServerError, err)
+			response.WriteErrorResponse(writer)
+
+			return
+		}
+		if recipe == nil {
+			response := &responses.ErrorResponse{}
+			response = responses.NewErrorResponse(http.StatusNotFound, appErrors.RecipeNotFoundError)
 			response.WriteErrorResponse(writer)
 
 			return

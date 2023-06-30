@@ -5,6 +5,7 @@ package responses
 import (
 	"net/http"
 
+	"otus-recipe/app/builders"
 	db "otus-recipe/app/storage/db/sqlc"
 )
 
@@ -19,10 +20,10 @@ func NewRecipeUpdateOkResponse(recipe db.Recipe) RecipeUpdateOkResponse {
 			ID:            recipe.ID,
 			Description:   recipe.Description.String,
 			CookingTime:   int(recipe.CookingTime),
-			Calories:      getIntValueFromSqlNull(recipe.Calories),
-			Proteins:      getIntValueFromSqlNull(recipe.Proteins),
-			Fats:          getIntValueFromSqlNull(recipe.Fats),
-			Carbohydrates: getIntValueFromSqlNull(recipe.Carbohydrates),
+			Calories:      builders.GetIntValueFromSqlNull(recipe.Calories),
+			Proteins:      builders.GetIntValueFromSqlNull(recipe.Proteins),
+			Fats:          builders.GetIntValueFromSqlNull(recipe.Fats),
+			Carbohydrates: builders.GetIntValueFromSqlNull(recipe.Carbohydrates),
 			Version:       recipe.Version.String(),
 		},
 	}
