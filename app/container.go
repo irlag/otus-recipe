@@ -7,6 +7,7 @@ import (
 	appProcessors "otus-recipe/app/processors"
 	"otus-recipe/app/server"
 	"otus-recipe/app/services"
+	"otus-recipe/app/services/clients"
 	db "otus-recipe/app/storage/db/sqlc"
 	"otus-recipe/app/storage/elastic"
 )
@@ -25,7 +26,8 @@ func NewContainer(cfg *config.Config) *Container {
 		logger.Fatal("can't initialize zap logger", zap.Error(err))
 	}
 
-	srvs := services.New(logger, cfg)
+	appClients := clients.New(cfg)
+	srvs := services.New(appClients)
 
 	elasticsearch, err := elastic.New(cfg)
 	if err != nil {

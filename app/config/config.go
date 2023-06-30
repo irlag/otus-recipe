@@ -14,6 +14,9 @@ type Config struct {
 	Elastic     ElasticSettings
 	Migrate     Migrate `envconfig:"MIGRATE"`
 	Debug       bool    `envconfig:"DEBUG"`
+	Clients     struct {
+		Notification *Service
+	}
 }
 
 func NewConfig() (*Config, error) {

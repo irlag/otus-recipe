@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"otus-recipe/app/api/parameters"
+	"otus-recipe/app/models"
 	db "otus-recipe/app/storage/db/sqlc"
 )
 
@@ -42,5 +43,17 @@ func (r *recipeProcessor) Create(ctx context.Context, params *parameters.RecipeC
 		Version: version,
 	}
 
-	return r.store.CreateRecipe(ctx, recipeFromRequest)
+	recipe, err := r.store.CreateRecipe(ctx, recipeFromRequest)
+	if err != nil {
+		return db.Recipe{}, err
+	}
+
+	err = r.services.Notification.EventSend(ctx, models.RecipeUpdated{
+		Name: recipe.Name,
+	})
+	if err != nil {
+		return db.Recipe{}, err
+	}
+
+	return recipe, nil
 }

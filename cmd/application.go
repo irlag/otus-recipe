@@ -13,7 +13,7 @@ var apiServer = &cobra.Command{
 	Short: "Run api http server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		s := server.New(container.Config, container.Log, container.Processors)
+		s := server.New(container.Config, container.Log, container.Processors, container.Services)
 
 		if err := s.Start(); err != nil {
 			log.Fatal(err)
