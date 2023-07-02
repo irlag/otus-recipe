@@ -27,7 +27,7 @@ func NewProcessor(
 ) *Processors {
 	return &Processors{
 		HealthcheckProcessor: NewHealtcheckProcessor(),
-		RecipeProcessor:      recipe.NewRecipeProcessor(store, elasticsearch),
+		RecipeProcessor:      recipe.NewRecipeProcessor(store, elasticsearch, services),
 		Command:              cmd.New(store, elasticsearch),
 	}
 }

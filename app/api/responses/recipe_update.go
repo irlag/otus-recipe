@@ -18,6 +18,7 @@ func NewRecipeUpdateOkResponse(recipe db.Recipe) RecipeUpdateOkResponse {
 	return RecipeUpdateOkResponse{
 		RecipeCommonOkResponse: RecipeCommonOkResponse{
 			ID:            recipe.ID,
+			Name:          recipe.Name,
 			Description:   recipe.Description.String,
 			CookingTime:   int(recipe.CookingTime),
 			Calories:      builders.GetIntValueFromSqlNull(recipe.Calories),

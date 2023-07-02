@@ -32,6 +32,7 @@ func New(
 	config *config.Config,
 	log *zap.Logger,
 	processors *appProcessors.Processors,
+	services *services.Services,
 ) *Server {
 	server := &Server{
 		config: config,
@@ -46,7 +47,7 @@ func New(
 
 	server.Router = NewRouter()
 
-	server.Services = services.New(log, config)
+	server.Services = services
 
 	api.NewMetricsApi(server.Prometheus).HandleMethods(server.Router)
 	api.NewHealthcheckApi(processors).HandleMethods(server.Router)

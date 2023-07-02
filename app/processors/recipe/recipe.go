@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"otus-recipe/app/models"
+	"otus-recipe/app/services"
 	db "otus-recipe/app/storage/db/sqlc"
 	"otus-recipe/app/storage/elastic"
 	"otus-recipe/app/storage/elastic/elastic_index"
@@ -24,11 +25,13 @@ type Recipe interface {
 type recipeProcessor struct {
 	store         db.Store
 	elasticsearch elastic.Elastic
+	services      *services.Services
 }
 
-func NewRecipeProcessor(store db.Store, elasticsearch elastic.Elastic) Recipe {
+func NewRecipeProcessor(store db.Store, elasticsearch elastic.Elastic, services *services.Services) Recipe {
 	return &recipeProcessor{
 		store:         store,
 		elasticsearch: elasticsearch,
+		services:      services,
 	}
 }

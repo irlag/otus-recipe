@@ -1,14 +1,20 @@
 package services
 
 import (
-	"go.uber.org/zap"
-
-	"otus-recipe/app/config"
+	"otus-recipe/app/services/clients"
+	"otus-recipe/app/services/notification"
 )
 
 type Services struct {
+	Notification notification.Notification
 }
 
-func New(log *zap.Logger, config *config.Config) *Services {
-	return &Services{}
+func New(clients *clients.Clients) *Services {
+	return &Services{
+		Notification: notification.New(
+			notification.Config{
+				Client: clients.Notification,
+			},
+		),
+	}
 }
